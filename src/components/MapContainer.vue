@@ -1,5 +1,5 @@
 <template>
-  <h2>My Map</h2>
+  <!-- <h2>My Map</h2> -->
   <div id="map" class="map"></div>
 </template>
 
@@ -9,7 +9,7 @@ import Map from "ol/Map";
 import View from "ol/View";
 import TileLayer from "ol/layer/Tile";
 import XYZ from "ol/source/XYZ";
-import first_res from "../resources/first_res"
+import upload_farms from "../resources/upload_farms"
 
 export default {
   methods: {
@@ -32,7 +32,7 @@ export default {
   },
 
   mounted() {
-    first_res.get().then(
+    upload_farms.get().then(
       result => {
         this.res = result
       }
@@ -43,8 +43,28 @@ export default {
 </script>
 
 <style>
-.map {
-  height: 800px;
-  width: 100%;
-}
+  .map {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+  }
+  .ol-zoom {
+      top: auto;
+      right: auto;
+      bottom: 100px;
+      left: 500px;
+      transition: left 0.4s ease-in-out;
+    }
+
+  .ol-center-map {
+    position: absolute;
+    top: auto;
+    right: auto;
+    left: 370px;
+    padding: 2px;
+    bottom: 126px;
+    transition: left 0.4s ease-in-out;
+    
+  }
+  
 </style>
