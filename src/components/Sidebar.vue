@@ -7,6 +7,7 @@
                 <input class="form-control" ref="file" type="file" name="file" id="formFile">
             </div>
             <button type="button" class="btn btn-primary" @click="submitFiles">Enviar</button>
+            <button type="button" class="btn btn-primary" @click="mymethod">Atualizar Mapa</button>
         </div>        
     </div>
     
@@ -14,18 +15,19 @@
 
 <script>
 
-import { ref } from "vue"
+import { ref, inject } from "vue"
 import upload_farms from "../resources/upload_farms"
 
 export default {
     data() {
         
     },
-    // methods: {
-    //     submitFiles() {
-    //         console.log("files")
-    //     }
-    // },
+    methods: {
+        generateVector() {
+            this.emitter.emit("generate_vectors", {'eventContent': 'String changed'})
+            console.log('method')
+        }
+    },
     
     setup() {
         const file = ref(null)
@@ -34,10 +36,17 @@ export default {
             console.log("selected file",file.value.files)
             upload_farms.post(file.value.files)
         }
+        const emitter = inject('emitter');
+        const mymethod = () => {
+            emitter.emit('load_areas', 100);
+        };
         return {
             submitFiles,
-            file
+            file,
+            mymethod
         }
+        
+        
     }
 }
 </script>
