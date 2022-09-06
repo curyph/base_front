@@ -13,10 +13,17 @@ import XYZ from "ol/source/XYZ";
 import GeoJSON from "ol/format/GeoJSON";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
+import WKT from "ol/format/WKT"
 import { Fill, Stroke, Style } from "ol/style";
 import upload_farms from "../resources/upload_farms";
 
 export default {
+  data() {
+    return {
+      addedLayer: false,
+    }
+  },
+
   methods: {
     add_vector() {
       const style = new Style({
@@ -38,6 +45,22 @@ export default {
       });
       this.map.addLayer(vectorLayer);
     },
+    add_farm_wkt(geometry){
+      const wkt = geometry
+      const format = new WKT()
+      const feature = format.readFeature(wkt, {
+        dataProjection: 'EPSG:3857',
+        featureProjection: 'EPSG:3857'
+      });
+      const vector = new VectorLayer({
+        source: new VectorSource({
+          features: [feature]
+        })
+      })
+      if(!this.addedLayer)
+        this.map.addLayer(vector);
+        this.addedLayer = true
+    }
   },
 
   mounted() {
@@ -60,9 +83,8 @@ export default {
     });
     const emitter = inject("emitter");
 
-    emitter.on("load_areas", (value) => {
-      console.log("myevent received!", `value: ${value}`);
-      this.add_vector();
+    emitter.on("load_areas", (value) => {      
+      this.add_farm_wkt(value.geometry);
     });
     // this.emitter.on('generate_vectors'), msg => {
     //   console.log(msg)

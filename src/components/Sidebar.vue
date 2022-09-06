@@ -16,19 +16,29 @@
 <script>
 
 import { ref, inject } from "vue"
-import upload_farms from "../resources/upload_farms"
+import load_farms from "../resources/load_farms"
 
 export default {
     data() {
-        
-    },
-    methods: {
-        generateVector() {
-            this.emitter.emit("generate_vectors", {'eventContent': 'String changed'})
-            console.log('method')
-        }
+        return {
+            farm_geometry2: {}
+        }        
     },
     
+    methods: {
+        
+        mymethod() {        
+            load_farms.get(1).then(
+                result => {
+                    this.farm_geometry2 = result.data  
+                    this.emitter.emit('load_areas', this.farm_geometry2);            
+                }
+            ) 
+        }
+    },
+    mounted() {
+        this.emitter = inject('emitter')
+    },
     setup() {
         const file = ref(null)
         const submitFiles = async() => {
@@ -36,14 +46,11 @@ export default {
             console.log("selected file",file.value.files)
             upload_farms.post(file.value.files)
         }
-        const emitter = inject('emitter');
-        const mymethod = () => {
-            emitter.emit('load_areas', 100);
-        };
+        
         return {
             submitFiles,
             file,
-            mymethod
+           
         }
         
         
