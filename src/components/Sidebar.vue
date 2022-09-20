@@ -16,6 +16,7 @@
 <script>
 
 import { ref, inject } from "vue"
+import upload_farms from "../resources/upload_farms"
 import load_farms from "../resources/load_farms"
 
 export default {
