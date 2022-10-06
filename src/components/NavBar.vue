@@ -12,7 +12,7 @@ export default {
 
 <style>
     #main-menu {
-        height: 50px;
+        height: 75px;
        
     }
 </style>

@@ -8,7 +8,39 @@
             </div>
             <button type="button" class="btn btn-primary" @click="submitFiles">Enviar</button>
             <button type="button" class="btn btn-primary" @click="mymethod">Atualizar Mapa</button>
-        </div>        
+        </div>     
+        <div class="farms-list">
+            <div class="farm-container">
+                <div class="farm-thumbnail">
+                    <img src="../images/farm1.png" class="img-thumbnail" alt="...">
+                </div>
+                <div class="farm-info">
+                    <div class="price">
+                        <h3>R$ 50.000.000</h3>
+                    </div>
+                    <div class="board-info">
+                        <div class="container text-center">
+                            <div class="row">
+                                <div class="col">
+                                    Piracicaba
+                                </div>
+                                <div class="col">
+                                    15000
+                                </div>                                
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    Cana
+                                </div>
+                                <div class="col">
+                                    R$ 1500 / ha
+                                </div>                                
+                            </div>                            
+                        </div>
+                    </div>                    
+                </div>                
+            </div>            
+        </div>   
     </div>
     
 </template>
@@ -29,7 +61,7 @@ export default {
     methods: {
         
         mymethod() {        
-            load_farms.get(1).then(
+            load_farms.get(5).then(
                 result => {
                     this.farm_geometry2 = result.data  
                     this.emitter.emit('load_areas', this.farm_geometry2);            
@@ -52,9 +84,7 @@ export default {
             submitFiles,
             file,
            
-        }
-        
-        
+        } 
     }
 }
 </script>
@@ -65,8 +95,22 @@ export default {
         width: 25%;
         position: fixed;
         background: white;
+        overflow: auto;
     }
     .input-files {
         padding: 10px;
+    }
+    .farm-container {
+        padding: 20px;
+        display: flex;
+        box-shadow: 10px;
+        cursor: pointer;
+    }
+    .farm-thumbnail {
+        flex: 40%;
+    }
+    .farm-info {        
+        flex: 60%
+        
     }
 </style>

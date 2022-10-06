@@ -1,21 +1,18 @@
 <template>
-  <NavBar />
-  <MapContainer />  
-  <Sidebar />
-  
+    <div id="home">
+        <h1>Página Inicial</h1>
+        <div class="menus">
+            <router-link :to="{name:'map-searcher'}"> sdf</router-link>
+        </div>
+    </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import MapContainer from "../components/MapContainer.vue"
-import NavBar from "../components/NavBar.vue"
-import Sidebar from "../components/Sidebar.vue"
-
 export default {
-    components: {
-    MapContainer,
-    NavBar,
-    Sidebar
-  }
+
 }
 </script>
+
+<style>
+
+</style>
