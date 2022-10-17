@@ -1,116 +1,54 @@
 <template>
-    <div class="sidebar-menu">
-        <h2>Teste Sidedbar</h2>  
-        <div class="input-files">
-            <div class="mb-3">
-                <label for="formFile" class="form-label">Importar Shapefile</label>
-                <input class="form-control" ref="file" type="file" name="file" id="formFile">
-            </div>
-            <button type="button" class="btn btn-primary" @click="submitFiles">Enviar</button>
-            <button type="button" class="btn btn-primary" @click="mymethod">Atualizar Mapa</button>
-        </div>     
-        <div class="farms-list">
-            <div class="farm-container">
-                <div class="farm-thumbnail">
-                    <img src="../images/farm1.png" class="img-thumbnail" alt="...">
-                </div>
-                <div class="farm-info">
-                    <div class="price">
-                        <h3>R$ 50.000.000</h3>
-                    </div>
-                    <div class="board-info">
-                        <div class="container text-center">
-                            <div class="row">
-                                <div class="col">
-                                    Piracicaba
-                                </div>
-                                <div class="col">
-                                    15000
-                                </div>                                
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    Cana
-                                </div>
-                                <div class="col">
-                                    R$ 1500 / ha
-                                </div>                                
-                            </div>                            
-                        </div>
-                    </div>                    
-                </div>                
-            </div>            
-        </div>   
-    </div>
-    
+    <div class="sidebar">
+        <router-view></router-view>     
+    </div> 
 </template>
 
 <script>
 
 import { ref, inject } from "vue"
-import upload_farms from "../resources/upload_farms"
-import load_farms from "../resources/load_farms"
+import load_intersections from "../resources/load_intersections"
 
 export default {
     data() {
         return {
-            farm_geometry2: {}
+            farm_geometry2: {},
+            farm_intersection: {}
         }        
     },
     
     methods: {
-        
-        mymethod() {        
-            load_farms.get(5).then(
+        loadIntersections(){
+            load_intersections.get().then(
                 result => {
-                    this.farm_geometry2 = result.data  
-                    this.emitter.emit('load_areas', this.farm_geometry2);            
+                    this.farm_intersection = result.data
+                    //console.log(this.farm_intersection)
+                    this.emitter.emit('load_reserve', this.farm_intersection)
                 }
-            ) 
+            )
         }
+        
     },
     mounted() {
         this.emitter = inject('emitter')
-    },
-    setup() {
-        const file = ref(null)
-        const submitFiles = async() => {
-            // debugger;
-            console.log("selected file",file.value.files)
-            upload_farms.post(file.value.files)
-        }
-        
-        return {
-            submitFiles,
-            file,
-           
-        } 
-    }
+    },    
 }
 </script>
 
 <style>
-    .sidebar-menu {
-        height: 100%;
-        width: 25%;
+    .sidebar {
         position: fixed;
-        background: white;
-        overflow: auto;
+        top: 76px;
+        left: 0;
+        width: 550px;
+        height: 100%;
+        opacity: 0.85;
+        background-color: #f5f7fb;
+        box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
     }
-    .input-files {
-        padding: 10px;
-    }
-    .farm-container {
-        padding: 20px;
-        display: flex;
-        box-shadow: 10px;
-        cursor: pointer;
-    }
-    .farm-thumbnail {
-        flex: 40%;
-    }
-    .farm-info {        
-        flex: 60%
-        
-    }
+
+    
+
+    
 </style>

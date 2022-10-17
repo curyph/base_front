@@ -1,8 +1,7 @@
 <template>
-  <NavBar />
-  <MapContainer />  
+  <NavBar />  
   <Sidebar />
-  
+  <MapContainer />  
 </template>
 
 <script>

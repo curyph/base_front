@@ -25,26 +25,26 @@ export default {
   },
 
   methods: {
-    add_vector() {
-      const style = new Style({
-        fill: new Fill({
-          color: "#eeeeee",
-        }),
-      });
-      const vectorLayer = new VectorLayer({
-        background: "#1a2b39",
-        source: new VectorSource({
-          url: "https://openlayers.org/data/vector/ecoregions.json",
-          format: new GeoJSON(),
-        }),
-        style: function (feature) {
-          const color = feature.get("COLOR") || "#eeeeee";
-          style.getFill().setColor(color);
-          return style;
-        },
-      });
-      this.map.addLayer(vectorLayer);
-    },
+    // add_vector() {
+    //   const style = new Style({
+    //     fill: new Fill({
+    //       color: "#eeeeee",
+    //     }),
+    //   });
+    //   const vectorLayer = new VectorLayer({
+    //     background: "#1a2b39",
+    //     source: new VectorSource({
+    //       url: "https://openlayers.org/data/vector/ecoregions.json",
+    //       format: new GeoJSON(),
+    //     }),
+    //     style: function (feature) {
+    //       const color = feature.get("COLOR") || "#eeeeee";
+    //       style.getFill().setColor(color);
+    //       return style;
+    //     },
+    //   });
+    //   this.map.addLayer(vectorLayer);
+    // },
     add_farm_wkt(geometry){
       const wkt = geometry
       const format = new WKT()
@@ -52,14 +52,31 @@ export default {
         dataProjection: 'EPSG:3857',
         featureProjection: 'EPSG:3857'
       });
-      const vector = new VectorLayer({
-        source: new VectorSource({
+      const source = new VectorSource({
           features: [feature]
         })
+      const vector = new VectorLayer({        
+        source: source
       })
-      if(!this.addedLayer)
-        this.map.addLayer(vector);
-        this.addedLayer = true
+      // if(!this.addedLayer)
+      //   this.map.addLayer(vector);
+      //   this.addedLayer = true
+      this.map.addLayer(vector)
+
+      
+      const source_feature = source.getFeatures()[0];
+      const polygon = source_feature.getGeometry();      
+  
+      this.view.fit(polygon, {padding: [0, 0, 0, 0]});
+
+      //var layerExtent = vector.getSource().getExtent();
+      //this.map.getView().fit(layerExtent);
+
+      
+    },
+    
+    add_farm_reserve(geometry) {
+
     }
   },
 
@@ -67,6 +84,12 @@ export default {
     upload_farms.get().then((result) => {
       this.res = result;
     });
+
+    this.view = new View({
+        center: [0, 0],
+        zoom: 2,
+      })
+
     this.map = new Map({
       target: "map",
       layers: [
@@ -76,19 +99,20 @@ export default {
           }),
         }),
       ],
-      view: new View({
-        center: [0, 0],
-        zoom: 2,
-      }),
+      view: this.view
     });
+
+    
     const emitter = inject("emitter");
 
-    emitter.on("load_areas", (value) => {      
-      this.add_farm_wkt(value.geometry);
+    emitter.on("load_areas", (area) => {      
+      this.add_farm_wkt(area.geometry)      
     });
-    // this.emitter.on('generate_vectors'), msg => {
-    //   console.log(msg)
-    // }
+    emitter.on("load_reserve", (reserve) => {
+      for (var area in reserve) {        
+        this.add_farm_wkt(reserve[area].geometry);        
+      }
+    })
   }
 };
 </script>
