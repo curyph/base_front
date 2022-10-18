@@ -1,40 +1,48 @@
 <template>
-  <div class="navbar">        
+  <div class="navbar-test">        
         <div class="logo">
             Logo
         </div>  
-        <div class="selectors1">
-            <div class="navbar-options">
-                <select v-model="state_selected">
-                    <option v-for="state in br_states" :value="state.state" :key="state">
-                        {{ state.state }}
-                    </option>
-                </select>
-                <select v-model="city_selected">
-                    <option v-for="city in br_cities" :value="city.city" :key="city">
-                        {{ city.city }}
-                    </option>
-                </select>
-            </div> 
-            <div class="submenu">
-                <select class="selector-sale-type">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                </select>
-                <select class="selector-price">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                </select>
-                <select class="selector-area">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                </select>
-                <select class="selector-x">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                </select>
-            </div> 
-        </div>      
+        <div class="middle">
+            <div class="flex-selectors">
+                <div class="navbar-options">
+                    <select v-model="state_selected" class="main-selectors">
+                        <option v-for="state in br_states" :value="state.state" :key="state">
+                            {{ state.state }}
+                        </option>
+                    </select>
+                    <select v-model="city_selected" class="main-selectors">
+                        <option v-for="city in br_cities" :value="city.city" :key="city">
+                            {{ city.city }}
+                        </option>
+                    </select>                
+                </div> 
+                <div class="submenu">
+                    <select class="sub-selectors">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                    </select>
+                    <select class="sub-selectors">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                    </select>
+                    <select class="sub-selectors">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                    </select>
+                    <select class="sub-selectors">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                    </select>
+                </div>  
+                
+            </div>   
+            <div class="search">
+                <button>Search</button>
+             </div> 
+        </div>
+                   
+        
         <div class="new-menu">
             <router-link :to="{name: 'farm-results', params: {state: state_selected, city: city_selected} }" aria-current="page" title="Detalhes">
                 <button @click="logcity">1</button>
@@ -77,9 +85,9 @@ export default {
 }
 </script>
 
-<style> 
+<style>   
 
-    .navbar {
+    .navbar-test {
         position: fixed;        
         top: 0;
         right: 0;
@@ -87,34 +95,29 @@ export default {
         height: 75px;   
         background-color: #f5f7fb;     
         display: flex;
-        flex-direction: row;
+        flex-direction: row;        
+        align-items: center;        
         padding: 5px;
-        box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.3);
-        /* justify-content: space-between; */
+        box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.3);  
+        z-index: 3000;      
     }       
     
     .logo {                
-        margin-right: 40px;
-    }
-    .selector-state {
-        width: 250px;
+        margin-right: 40px;        
+        flex:1;
+        text-align: left;
+    }    
+    .main-selectors {
+        width: 310px;
+        height: 25px;
+        color: gray;
+        background-color: white;
         margin-right: 10px;
-        height: 25px;
-        color: gray;
-        border: 1px;
-    }
-    .selector-city {
-        width: 300px;
-        height: 25px;
-        color: gray;
         border: 1px;
         border-radius: 5px;
     }
-    .selector-sale-type, 
-    .selector-price,
-    .selector-area,
-    .selector-x {
-        width: 125px;
+    .sub-selectors {
+        width: 150px;
         height: 25px;
         margin-right: 10px;
         color: gray;
@@ -124,9 +127,20 @@ export default {
     
     .navbar-options, .submenu {
         display: flex;
-        flex-direction: row;
-        margin-bottom: 5px;
+        flex-direction: row;        
+        margin-bottom: 5px;        
         color: gray;
         border: 1px;
     }
+
+    .middle {
+        display: flex;
+        flex: 3;
+    }
+
+    
+    
+    
+    
+    
 </style>
