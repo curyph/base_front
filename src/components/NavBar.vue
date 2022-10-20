@@ -6,16 +6,16 @@
         <div class="middle">
             <div class="flex-selectors">
                 <div class="navbar-options">
-                    <select v-model="state_selected" class="main-selectors">
-                        <option v-for="state in br_states" :value="state.state" :key="state">
+                    <select v-model="state_id" class="main-selectors" @click="load_cities">
+                        <option v-for="state in states" :value="state.state_id" :key="state">
                             {{ state.state }}
                         </option>
                     </select>
-                    <select v-model="city_selected" class="main-selectors">
-                        <option v-for="city in br_cities" :value="city.city" :key="city">
+                    <select v-model="city_id" class="main-selectors">
+                        <option v-for="city in cities" :value="city.city_id" :key="city">
                             {{ city.city }}
                         </option>
-                    </select>                
+                    </select>
                 </div> 
                 <div class="submenu">
                     <select class="sub-selectors">
@@ -38,15 +38,17 @@
                 
             </div>   
             <div class="search">
-                <button>Search</button>
-             </div> 
+                <router-link :to="{name: 'farm-results', params: {state: state_id, city: city_id} }" aria-current="page" title="Resultados">
+                    <button @click="searchFarms">Search</button>
+                </router-link>
+            </div> 
         </div>
                    
         
         <div class="new-menu">
-            <router-link :to="{name: 'farm-results', params: {state: state_selected, city: city_selected} }" aria-current="page" title="Detalhes">
+            <!-- <router-link :to="{name: 'farm-results', params: {farms: farm_area} }" aria-current="page" title="Detalhes">
                 <button @click="logcity">1</button>
-             </router-link>
+             </router-link> -->
             <button>1</button>
             <button>1</button>
             <button>1</button>
@@ -56,37 +58,41 @@
 </template>
 
 <script>
-import { none } from 'ol/centerconstraint'
+
+import states_cities from "../resources/states_cities"
+
 export default {
 
     data() {
         return {
-            state_selected: '',
-            city_selected: '',
-            br_states: [
-                { state: 'São Paulo - SP', id: '1' },
-                { state: 'Mato Grosso - MT', value: '2' },
-                { state: 'Bahia - BA', value: '3' }
-            ],
-            br_cities: [
-                {city: 'Piracicaba', state_id: 1, city_id: 22},
-                {city: 'Americana', state_id: 1, city_id: 22},
-                {city: 'São Paulo', state_id: 1, city_id: 22},
-                {city: 'Ribeirão Preto', state_id: 1, city_id: 22}
-            ]
+            states: [],
+            state_id: null,
+            cities: [],
+            city_id: null,
+            farm_area: null
         }
     }, 
     methods: {
-        logcity() {
-            console.log(this.city_selected, this.state_selected)
-        }
+        load_cities() {
+            states_cities.getCities(this.state_id).then(
+                result => {
+                    this.cities = result.data
+                }
+            )   
+        },        
+    },
+    mounted() {
+        states_cities.getStates().then(
+            result => {
+                this.states = result.data                                
+            }
+        )
     }
     
 }
 </script>
 
 <style>   
-
     .navbar-test {
         position: fixed;        
         top: 0;
@@ -136,11 +142,5 @@ export default {
     .middle {
         display: flex;
         flex: 3;
-    }
-
-    
-    
-    
-    
-    
+    }    
 </style>

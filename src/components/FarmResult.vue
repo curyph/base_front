@@ -1,10 +1,10 @@
 <template>
     <!-- <router-link :to="{name: 'farm-details'}" aria-current="page" title="Detalhes"> -->
-        <div class="farm-container" @click="loadFarms">                    
+        <div class="farm-container" @click="loadFarms(farm.id)" v-for="farm in farm_area" :key="farm" :value="farm.id">                    
             <img src="../images/farm1.png" alt="" class="farm-thumbnail">
             <div class="farm-info">
                 <div class="price">R$ 20.000.000</div>
-                <div class="short">Propriedade em São Paulo - SP</div>
+                <div class="short">{{ farm.nome_fazenda }}</div>
                 <div class="farm-attributes">
                     <img src="../images/location-sign-svgrepo-com.svg" alt="">
                     <p class="farm-city-state">Piracicaba-SP</p>
@@ -29,6 +29,13 @@ import load_intersections from "../resources/load_intersections"
 import load_farms from "../resources/load_farms"
 
 export default {
+    data() {
+        return {
+            state_id: this.$route.params.state,
+            city_id: this.$route.params.city,
+            farm_area: []
+        }
+    },
      methods: {
         loadIntersections(){
             load_intersections.get().then(
@@ -39,20 +46,22 @@ export default {
                 }
             )
         },
-
-        loadFarms() {
-            load_farms.get(22).then(
+        loadFarms(id) {
+            console.log(id)
+        },
+        searchFarms(state_id, city_id) {
+            load_farms.get(state_id, city_id).then(
                 result => {
                     this.farm_area = result.data
-                    //console.log(this.farm_intersection)
-                    this.emitter.emit('load_areas', this.farm_area)
+                    console.log(this.farm_area)
                 }
             )
         }
-        
     },
     mounted() {
-        this.emitter = inject('emitter')
+        this.emitter = inject('emitter'),        
+        this.searchFarms(this.state_id, this.city_id)
+        
     },    
 }
 </script>

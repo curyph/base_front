@@ -11,14 +11,14 @@
             </div>
             <div class="state-select">
                 <select v-model="state_id" @click="load_cities">
-                    <option v-for="state in states" :value="state.state_id" :key="state">
+                    <option v-for="state in states" :value="state.state_id" :key="state" ref="state_id">
                         {{ state.state }}
                     </option>
                 </select>
             </div>
             <div class="city-select">
                 <select v-model="city_id">
-                    <option v-for="city in cities" :value="city.city_id" :key="city">
+                    <option v-for="city in cities" :value="city.city_id" :key="city" ref="city_id">
                         {{ city.city }}
                     </option>
                 </select>
@@ -35,7 +35,7 @@
 
 <script>
 
-import { ref, inject } from "vue"
+import { ref, inject, reactive} from "vue"
 import upload_farms from "../resources/upload_farms"
 import load_farms from "../resources/load_farms"
 import load_intersections from "../resources/load_intersections"
@@ -53,7 +53,7 @@ export default {
     }, 
     methods: {
         mymethod() {        
-            load_farms.get(16).then(
+            load_farms.get(4).then(
                 result => {
                     this.farm_geometry2 = result.data  
                     this.emitter.emit('load_areas', this.farm_geometry2);            
@@ -80,16 +80,30 @@ export default {
 
     setup() {
         const file = ref(null)
+        const state_id = ref(null)
+        const city_id = ref(null)
+        const data = reactive({
+                state_id: '',
+                city_id: '',
+                file: ''
+            })
         const submitFiles = async() => {
             // debugger;
-            console.log("selected file",file.value.files)
-            upload_farms.post(file.value.files)
+            //console.log("selected file",file.value.files)                    
+            data.state_id = state_id.value
+            data.city_id = city_id.value     
+            data.file = file.value.files
+            console.log(file.value.files)    
+            console.log(data.file)    
+            upload_farms.post(file.value.files, data.state_id, data.city_id)
         }
         
         return {
             submitFiles,
-            file,
-           
+            file,  
+            state_id,
+            city_id,          
+            data
         } 
     },
     
