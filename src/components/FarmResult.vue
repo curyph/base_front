@@ -1,25 +1,30 @@
 <template>
-    <!-- <router-link :to="{name: 'farm-details'}" aria-current="page" title="Detalhes"> -->
-        <div class="farm-container" @click="loadFarms(farm.id)" v-for="farm in farm_area" :key="farm" :value="farm.id">                    
-            <img src="../images/farm1.png" alt="" class="farm-thumbnail">
-            <div class="farm-info">
-                <div class="price">R$ 20.000.000</div>
-                <div class="short">{{ farm.nome_fazenda }}</div>
-                <div class="farm-attributes">
-                    <img src="../images/location-sign-svgrepo-com.svg" alt="">
-                    <p class="farm-city-state">Piracicaba-SP</p>
-                    <img src="../images/area-svgrepo-com.svg" alt="">
-                    <p class="farm-city-state">50.000 ha</p>
-                </div>  
-                <div class="farm-attributes">
-                    <img src="../images/location-sign-svgrepo-com.svg" alt="">
-                    <p class="farm-city-state">fsdfsdf</p>
-                    <img src="../images/location-sign-svgrepo-com.svg" alt="">
-                    <p class="farm-city-state">50.000 ha</p>
-                </div>                     
-            </div>                    
+    <router-link :to="{name: 'farm-details'}" aria-current="page" title="Detalhes">
+        <div v-if="farm_areas.length">
+            <div class="farm-container" @click="loadFarms(farm)" v-for="farm in farm_areas" :key="farm" :value="farm">                    
+                <img src="../assets/images/farm1.png" alt="" class="farm-thumbnail">
+                <div class="farm-info">
+                    <div class="price">R$ 20.000.000</div>
+                    <div class="short">{{ farm.nome_fazenda }}</div>
+                    <div class="farm-attributes">
+                        <img src="../assets/icons/location-sign-svgrepo-com.svg" alt="">
+                        <p class="farm-city-state">Piracicaba-SP</p>
+                        <img src="../assets/icons/area-svgrepo-com.svg" alt="">
+                        <p class="farm-city-state">50.000 ha</p>
+                    </div>  
+                    <div class="farm-attributes">
+                        <img src="../assets/icons/location-sign-svgrepo-com.svg" alt="">
+                        <p class="farm-city-state">fsdfsdf</p>
+                        <img src="../assets/icons/location-sign-svgrepo-com.svg" alt="">
+                        <p class="farm-city-state">50.000 ha</p>
+                    </div>                     
+                </div>                    
+            </div>
         </div>
-    <!-- </router-link> -->
+        <div v-else>
+            Area não encontrada
+        </div>
+    </router-link>
 </template>
 
 <script>
@@ -33,36 +38,45 @@ export default {
         return {
             state_id: this.$route.params.state,
             city_id: this.$route.params.city,
-            farm_area: []
+            farm_areas: []
         }
     },
      methods: {
         loadIntersections(){
             load_intersections.get().then(
                 result => {
-                    this.farm_intersection = result.data
-                    //console.log(this.farm_intersection)
+                    this.farm_intersection = result.data                    
                     this.emitter.emit('load_reserve', this.farm_intersection)
                 }
             )
         },
-        loadFarms(id) {
-            console.log(id)
+        loadFarms(farm) {           
+            this.emitter.emit('load_areas', farm)
+
         },
         searchFarms(state_id, city_id) {
             load_farms.get(state_id, city_id).then(
                 result => {
-                    this.farm_area = result.data
-                    console.log(this.farm_area)
+                    this.farm_areas = result.data
                 }
             )
         }
     },
     mounted() {
-        this.emitter = inject('emitter'),        
+        this.emitter = inject('emitter')    
         this.searchFarms(this.state_id, this.city_id)
         
     },    
+    created() {
+        this.$watch(
+        () => this.$route.params,
+            (toParams, previousParams) => {
+                this.searchFarms(toParams.state, toParams.city)            
+            }
+        )
+    },
+    watch: {}
+    
 }
 </script>
 

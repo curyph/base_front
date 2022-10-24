@@ -21,30 +21,12 @@ export default {
   data() {
     return {
       addedLayer: false,
+      map: null,
+      basemap: null
     }
   },
 
-  methods: {
-    // add_vector() {
-    //   const style = new Style({
-    //     fill: new Fill({
-    //       color: "#eeeeee",
-    //     }),
-    //   });
-    //   const vectorLayer = new VectorLayer({
-    //     background: "#1a2b39",
-    //     source: new VectorSource({
-    //       url: "https://openlayers.org/data/vector/ecoregions.json",
-    //       format: new GeoJSON(),
-    //     }),
-    //     style: function (feature) {
-    //       const color = feature.get("COLOR") || "#eeeeee";
-    //       style.getFill().setColor(color);
-    //       return style;
-    //     },
-    //   });
-    //   this.map.addLayer(vectorLayer);
-    // },
+  methods: {    
     add_farm_wkt(geometry){
       const wkt = geometry
       const format = new WKT()
@@ -58,12 +40,9 @@ export default {
       const vector = new VectorLayer({        
         source: source
       })
-      // if(!this.addedLayer)
-      //   this.map.addLayer(vector);
-      //   this.addedLayer = true
+      
       this.map.addLayer(vector)
 
-      
       const source_feature = source.getFeatures()[0];
       const polygon = source_feature.getGeometry();      
   
@@ -71,7 +50,6 @@ export default {
 
       //var layerExtent = vector.getSource().getExtent();
       //this.map.getView().fit(layerExtent);
-
       
     },
     
@@ -90,24 +68,30 @@ export default {
         zoom: 2,
       })
 
+    this.basemap = new TileLayer({
+      source: new XYZ({
+        url: "https://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      }),
+    }),
+
     this.map = new Map({
       target: "map",
-      layers: [
-        new TileLayer({
-          source: new XYZ({
-            url: "https://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-          }),
-        }),
-      ],
+      layers: [this.basemap],
       view: this.view
     });
-
     
     const emitter = inject("emitter");
 
-    emitter.on("load_areas", (area) => {      
-      this.add_farm_wkt(area.geometry)      
+    emitter.on("load_areas", (area) => {     
+
+      this.map.getLayers().forEach(layer => {
+        if (layer != this.basemap) {
+          this.map.removeLayer(layer)
+        }        
+      })
+      this.add_farm_wkt(area.geometry)
     });
+    
     emitter.on("load_reserve", (reserve) => {
       for (var area in reserve) {        
         this.add_farm_wkt(reserve[area].geometry);        

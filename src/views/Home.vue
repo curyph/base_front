@@ -92,9 +92,7 @@ export default {
             //console.log("selected file",file.value.files)                    
             data.state_id = state_id.value
             data.city_id = city_id.value     
-            data.file = file.value.files
-            console.log(file.value.files)    
-            console.log(data.file)    
+            data.file = file.value.files             
             upload_farms.post(file.value.files, data.state_id, data.city_id)
         }
         

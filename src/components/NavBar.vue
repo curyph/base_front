@@ -38,9 +38,13 @@
                 
             </div>   
             <div class="search">
-                <router-link :to="{name: 'farm-results', params: {state: state_id, city: city_id} }" aria-current="page" title="Resultados">
-                    <button @click="searchFarms">Search</button>
-                </router-link>
+                <button @click="sidebarToggle">
+                    <router-link :to="{name: 'farm-results', params: {state: state_id, city: city_id} }" aria-current="page" title="Resultados">
+                        <div>Search</div>
+                    </router-link>
+                </button>
+                <!-- <button @click="sidebarToggle" >Search</button> -->
+                <!-- <Sidebar  v-if="load_sidebar" /> -->
             </div> 
         </div>
                    
@@ -55,21 +59,27 @@
             <button>1</button>
         </div>  
     </div>
+    
+    
 </template>
 
 <script>
 
 import states_cities from "../resources/states_cities"
+import Sidebar from "./Sidebar.vue"
 
 export default {
-
+    components: {
+        Sidebar
+    },
     data() {
         return {
             states: [],
             state_id: null,
             cities: [],
             city_id: null,
-            farm_area: null
+            farm_area: null,
+            load_sidebar: false
         }
     }, 
     methods: {
@@ -77,9 +87,14 @@ export default {
             states_cities.getCities(this.state_id).then(
                 result => {
                     this.cities = result.data
+                    
                 }
             )   
-        },        
+        },    
+        sidebarToggle() {
+            this.load_sidebar = true
+
+        }   
     },
     mounted() {
         states_cities.getStates().then(

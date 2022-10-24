@@ -10,6 +10,7 @@ import { ref, inject } from "vue"
 import load_intersections from "../resources/load_intersections"
 
 export default {
+    props: ['city', 'state'],
     data() {
         return {
             farm_geometry2: {},
@@ -31,6 +32,7 @@ export default {
     },
     mounted() {
         this.emitter = inject('emitter')
+        
     },    
 }
 </script>
@@ -46,6 +48,7 @@ export default {
         background-color: #f5f7fb;
         box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.3);
         z-index: 1000;
+        overflow: auto;
     }
 
     
