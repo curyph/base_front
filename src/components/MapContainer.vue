@@ -13,6 +13,7 @@ import XYZ from "ol/source/XYZ";
 import XYZSource from 'ol/source/XYZ';
 import GeoJSON from "ol/format/GeoJSON";
 import VectorLayer from "ol/layer/Vector";
+import LayerGroup from "ol/layer/Group";
 import VectorSource from "ol/source/Vector";
 import WKT from "ol/format/WKT"
 import { Fill, Stroke, Style } from "ol/style";
@@ -21,74 +22,57 @@ import upload_farms from "../resources/upload_farms";
 export default {
   data() {
     return {
-      addedLayer: false,
+      addedFarmLayer: false,
+      addedFarmReserve: false,
       map: null,
       basemap: null,
-      satelliteLayer: null
+      satelliteLayer: null,
+      vector: null,
+      reserves_vector: null
     }
   },
 
   methods: {    
-    add_farm_wkt(geometry){
+    add_farm_wkt(vector_layer, geometry){     
+      vector_layer.getSource().clear()
       const wkt = geometry
       const format = new WKT()
       const feature = format.readFeature(wkt, {
         dataProjection: 'EPSG:3857',
         featureProjection: 'EPSG:3857'
-      });
-      const source = new VectorSource({
-          features: [feature]
-        })
-      const vector = new VectorLayer({        
-        source: source,   
-        opacity: 0.7,            
-        style: new Style({
-          // fill: new Fill({
-          //   color: 'white'
-          // }),  
-          stroke: new Stroke({
-            color: 'white',
-            width: 3
-          }),          
-        })
-      })
-      
-      this.map.addLayer(vector)
-
-      const source_feature = source.getFeatures()[0];
+      });      
+      vector_layer.getSource().addFeature(feature)
+      if (!this.addedFarmLayer) {
+        this.map.addLayer(this.OverlaysGroup)    
+        this.OverlaysGroup.getLayers().array_.push(vector_layer)    
+        this.addedFarmLayer = true
+      }   
+      const source_feature = vector_layer.getSource().getFeatures()[0];
       const polygon = source_feature.getGeometry();      
-  
-      this.view.fit(polygon, {padding: [0, 0, 0, 0]});
-
-      //var layerExtent = vector.getSource().getExtent();
-      //this.map.getView().fit(layerExtent);
-      
+      this.view.fit(polygon, {padding: [0, 0, 0, 0]});     
     },
     
-    add_farm_reserve(geometry) {
-      const wkt = geometry
+    add_farm_reserve(reserves_vector, geometries) {
+      reserves_vector.getSource().clear()
+      const features = []
       const format = new WKT()
-      const feature = format.readFeature(wkt, {
-        dataProjection: 'EPSG:3857',
-        featureProjection: 'EPSG:3857'
-      });
-      const source = new VectorSource({
-          features: [feature]
-        })
-      const reserves_vector = new VectorLayer({        
-        source: source,         
-        opacity: 0.7,
-        style: new Style({
-          fill: new Fill({
-            color: 'green'
+
+      for (var geometry in geometries) {        
+        features.push(
+          format.readFeature(geometries[geometry], {
+            dataProjection: 'EPSG:3857',
+            featureProjection: 'EPSG:3857'
           }),
-          stroke: new Stroke({
-            color: 'green',
-            width: 1
-          }),          
-        })
-      })
-      this.map.addLayer(reserves_vector)
+        )
+      }
+      if(!this.addedFarmReserve) {
+        reserves_vector.getSource().addFeatures(features)
+        this.map.addLayer(this.reserves_vector)        
+        this.addedFarmReserve = !this.addedFarmReserve
+      } else {
+        this.map.removeLayer(reserves_vector)
+        this.addedFarmReserve = !this.addedFarmReserve
+      }
     }
   },
 
@@ -116,34 +100,63 @@ export default {
       }),
     }),
 
+    this.BaseLayerGroup = new LayerGroup({
+      layers: [this.satelliteLayer]
+    })
+
+    this.OverlaysGroup = new LayerGroup({
+      layers: []
+    })
+
+    this.vector = new VectorLayer({        
+      source: new VectorSource(),
+      opacity: 0.7,            
+      style: new Style({
+        fill: new Fill({
+          color: 'white'
+        }),  
+        stroke: new Stroke({
+          color: 'white',
+          width: 3
+        }),          
+      })
+    })
+
+    this.reserves_vector = new VectorLayer({
+      source: new VectorSource(),
+      opacity: 0.5,            
+      style: new Style({
+        fill: new Fill({
+          color: 'green'
+        }),  
+        stroke: new Stroke({
+          color: 'green',
+          width: 3
+        }),          
+      })
+    })
+
     this.map = new Map({
       target: "map",
-      layers: [this.satelliteLayer],
+      //layers: [this.satelliteLayer],
       view: this.view
     });
+
+    this.map.addLayer(this.basemap)
     
     const emitter = inject("emitter");
 
-    emitter.on("load_areas", (area) => {          
-      this.map.getLayers().forEach(layer => {
-        if (layer != this.satelliteLayer) {
-          //layer.setVisible(false)
-          console.log(layer)
-          this.map.removeLayer(layer)
-          //console.log('TESTE')
-        }        
-      })
-      this.add_farm_wkt(area.geometry)
-      this.addedLayer = false
+    emitter.on("load_areas", (area) => {        
+      this.add_farm_wkt(this.vector, area.geometry)
     });
     
     emitter.on("load_reserves", (reserve) => {
-      if (!this.addedLayer) {
-        for (var area in reserve) {        
-          this.add_farm_reserve(reserve[area].geometry);        
+      
+        var reserves_geometry = [];
+        for (var area in reserve) {       
+          reserves_geometry.push(reserve[area].geometry)           
         }
-      }
-      this.addedLayer = true
+        this.add_farm_reserve(this.reserves_vector, reserves_geometry);
     })
   }
 };

@@ -22,8 +22,7 @@ export default {
         loadIntersections(){
             load_intersections.get().then(
                 result => {
-                    this.farm_intersection = result.data
-                    //console.log(this.farm_intersection)
+                    this.farm_intersection = result.data                    
                     this.emitter.emit('load_reserve', this.farm_intersection)
                 }
             )

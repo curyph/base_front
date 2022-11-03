@@ -53,7 +53,7 @@
             <!-- <router-link :to="{name: 'farm-results', params: {farms: farm_area} }" aria-current="page" title="Detalhes">
                 <button @click="logcity">1</button>
              </router-link> -->
-            <button>1</button>
+            <button @click="home">Home</button>
             <button>1</button>
             <button>1</button>
             <button>1</button>
@@ -94,6 +94,9 @@ export default {
         sidebarToggle() {
             this.load_sidebar = true
 
+        },
+        home() {
+            this.$router.push('/map-searcher')
         }   
     },
     mounted() {

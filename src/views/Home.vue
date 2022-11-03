@@ -70,8 +70,7 @@ export default {
         loadIntersections(){
             load_intersections.get().then(
                 result => {
-                    this.farm_intersection = result.data
-                    //console.log(this.farm_intersection)
+                    this.farm_intersection = result.data                    
                     this.emitter.emit('load_reserve', this.farm_intersection)
                 }
             )
@@ -88,8 +87,7 @@ export default {
                 file: ''
             })
         const submitFiles = async() => {
-            // debugger;
-            //console.log("selected file",file.value.files)                    
+            // debugger;            
             data.state_id = state_id.value
             data.city_id = city_id.value     
             data.file = file.value.files             
