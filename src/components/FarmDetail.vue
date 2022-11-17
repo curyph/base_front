@@ -67,7 +67,7 @@
     </div>
   </div>
   <div class="flex-btn-container">
-    <button class="flex-btn" @click="load_reserves">
+    <button class="flex-btn" v-bind:class="[isActive? 'active':'']" @click="load_reserves">
       <img
         src="../assets/icons/trees-forest-svgrepo-com.svg"
         alt=""
@@ -90,6 +90,7 @@ export default {
       state_id: this.$route.params.state,
       city_id: this.$route.params.city,
       reserves: [],
+      isActive: false
     };
   },
   methods: {
@@ -98,6 +99,7 @@ export default {
     },
     load_reserves() {
       load_intersections.get().then((result) => {
+        this.isActive = !this.isActive
         this.reserves = result.data;
         this.emitter.emit("load_reserves", this.reserves);
       });
@@ -199,6 +201,10 @@ export default {
   border-width: 1px;
   border-color: white;
   border-radius: 8px;
+}
+
+.active {
+  background-color: rgb(130, 255, 118);
 }
 
 .flex-btn-icon {

@@ -28,7 +28,8 @@ export default {
       basemap: null,
       satelliteLayer: null,
       vector: null,
-      reserves_vector: null
+      reserves_vector: null,
+      farm_data: null
     }
   },
 
@@ -112,9 +113,9 @@ export default {
       source: new VectorSource(),
       opacity: 0.7,            
       style: new Style({
-        fill: new Fill({
-          color: 'white'
-        }),  
+        // fill: new Fill({
+        //   color: 'white'
+        // }),  
         stroke: new Stroke({
           color: 'white',
           width: 3
@@ -138,23 +139,28 @@ export default {
 
     this.map = new Map({
       target: "map",
-      //layers: [this.satelliteLayer],
+      layers: [this.satelliteLayer],
       view: this.view
     });
 
-    this.map.addLayer(this.basemap)
+    //this.map.addLayer(this.basemap)
     
     const emitter = inject("emitter");
 
-    emitter.on("load_areas", (area) => {        
+    emitter.on("load_areas", (area) => {      
+      this.farm_data = area  
       this.add_farm_wkt(this.vector, area.geometry)
     });
     
     emitter.on("load_reserves", (reserve) => {
       
         var reserves_geometry = [];
-        for (var area in reserve) {       
-          reserves_geometry.push(reserve[area].geometry)           
+        // for (var area in reserve) {       
+        //   reserves_geometry.push(reserve[area].geometry)           
+        // }
+        // this.add_farm_reserve(this.reserves_vector, reserves_geometry);
+        for (var area in this.farm_data.reserves) {
+          reserves_geometry.push(this.farm_data.reserves[area])          
         }
         this.add_farm_reserve(this.reserves_vector, reserves_geometry);
     })
