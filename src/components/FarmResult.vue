@@ -60,6 +60,10 @@ export default {
       this.emitter.emit("testing", farm);
     },
     searchFarms(state_id, city_id) {
+      var abc = {
+        "Teste1": "Pedro",
+        "Teste2": "Jose"
+      }
       load_farms.get(state_id, city_id).then((result) => {
         this.farm_areas = result.data;
       });
